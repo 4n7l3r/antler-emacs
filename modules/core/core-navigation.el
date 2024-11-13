@@ -6,14 +6,20 @@
   :custom
   (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   (aw-scope 'frame)
-  (aw-background t))
-
-(use-package imenu-anywhere
-  :ensure t
-  :bind (("C-c i" . imenu-anywhere))
-  :custom
-  (imenu-auto-rescan t)
-  (imenu-max-item-length 200))
+  (aw-background t)
+  (setq aw-dispatch-alist((?x aw-delete-window "Delete Window")
+			  (?m aw-swap-window "Swap Windows")
+			  (?M aw-move-window "Move Window")
+			  (?c aw-copy-window "Copy Window")
+			  (?j aw-switch-buffer-in-window "Select Buffer")
+			  (?n aw-flip-window)
+			  (?u aw-switch-buffer-other-window "Switch Buffer Other Window")
+			  (?c aw-split-window-fair "Split Fair Window")
+			  (?v aw-split-window-vert "Split Vert Window")
+			  (?b aw-split-window-horz "Split Horz Window")
+			  (?o delete-other-windows "Delete Other Windows")
+			  (?? aw-show-dispatch-help)))
+  (aw-dispatch-always t))
 
 (use-package which-key
   :ensure t
@@ -24,8 +30,6 @@
   (which-key-max-display-columns nil)
   :config
   (which-key-mode))
-
-(setq-default dired-dwim-target t)
 
 ;; Prefer g-prefixed coreutils version of standard utilities when available
 (let ((gls (executable-find "gls")))
@@ -42,10 +46,6 @@
 (define-key ctl-x-map "\C-j" 'dired-jump)
 (define-key ctl-x-4-map "\C-j" 'dired-jump-other-window)
 
-(with-eval-after-load 'dired
-  (setq dired-recursive-deletes 'top)
-  (define-key dired-mode-map [mouse-2] 'dired-find-file)
-  (define-key dired-mode-map (kbd "C-c C-q") 'wdired-change-to-wdired-mode))
 
 (use-package diff-hl
   :ensure t
@@ -55,25 +55,21 @@
 
 (use-package dirvish
   :ensure t
-  :after nerd-icons
   :init
   (dirvish-override-dired-mode)
+  :custom
+  (dirvish-quick-access-entries
+   '(("e" "~/.config/" "Emacs Config")
+     ("o" "~/org" "Org")))
   :config
-  (setq dirvish-mode-line-format
-        '(:left (sort symlink) :right (omit yank index)))
-  (setq dirvish-mode-line-height 10)
+  (dirvish-override-dired-mode)
+  (dirvish-peek-mode)
+  (dirvish-side-follow-mode)
   (setq dirvish-attributes
-        '(nerd-icons file-time file-size collapse subtree-state vc-state git-msg))
-  (setq dirvish-subtree-state-style 'nerd)
-  (setq delete-by-moving-to-trash t)
-  (setq dirvish-path-separators (list
-                                 (format "  %s " (nerd-icons-codicon "nf-cod-home"))
-                                 (format "  %s " (nerd-icons-codicon "nf-cod-root_folder"))
-                                 (format " %s " (nerd-icons-faicon "nf-fa-angle_right"))))
+      '(vc-state file-size git-msg subtree-state all-the-icons collapse file-time))
+  (setq dirvish-mode-line-format '(:left (sort symlink) :right (vc-info yank index)))
+  (setq dirvish-header-line-height '(25 . 35))
+  (setq dirvish-header-line-format '(:left (path) :right (free-space)))
   (setq dired-listing-switches
-        "-l --almost-all --human-readable --group-directories-first --no-group")
-  (dirvish-peek-mode) ; Preview files in minibuffer
-  (dirvish-side-follow-mode) ; similar to `treemacs-follow-mode'
-  )
-
+      "-l --almost-all --human-readable --group-directories-first --no-group"))
 (provide 'core-navigation)

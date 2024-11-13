@@ -11,7 +11,7 @@
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
 
-;; Navigation
+;; navigation
 (global-set-key (kbd "M-g g") 'avy-goto-line)
 (global-set-key (kbd "C-;") 'avy-goto-char-timer)
 
