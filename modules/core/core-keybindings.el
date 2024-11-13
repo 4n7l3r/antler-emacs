@@ -19,10 +19,6 @@
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "C-c d") 'duplicate-line)
 
-;; Project navigation
-(global-set-key (kbd "C-c p f") 'project-find-file)
-(global-set-key (kbd "C-c p s") 'project-find-regexp)
-
 ;; LSP keybindings
 (with-eval-after-load 'lsp-mode
   (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)

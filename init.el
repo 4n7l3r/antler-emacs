@@ -7,13 +7,14 @@
 
 ;; Load path setup
 (defvar modules-dir (expand-file-name "modules" user-emacs-directory))
-(dolist (dir '("core" "completion" "dev" "lang" "ui"))
+(dolist (dir '("core" "completion" "dev" "lang" "org-mode" "ui"))
   (add-to-list 'load-path (expand-file-name dir modules-dir)))
 
 ;; Core modules
 (require 'core-packages)
 (require 'core-performance)
 (require 'core-ui)
+(require 'core-keybindings)
 (require 'core-navigation)
 (require 'core-editor)
 (require 'core-search)
@@ -32,6 +33,9 @@
 ;; Language modules
 (require 'lang-elisp)
 (require 'lang-go)
+
+;; ORG Mode
+(require 'org-mode)
 
 ;; UI modules
 (require 'ui-theme)

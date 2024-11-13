@@ -185,11 +185,15 @@ ORIG is the advised function, which is called with its ARGS."
         try-expand-dabbrev-from-kill))
 
 (use-package windmove
-  :config
-  (windmove-default-keybindings))
+  :bind
+  (:map global-map
+        ("s-K" . windmove-up)
+        ("s-J" . windmove-down)
+        ("s-H" . windmove-left)
+	("s-L" . windmove-right)))
 
 ;; Parentheses
-(electric-pair-mode 1)
+;;(electric-pair-mode 1)
 (show-paren-mode 1)
 (setq show-paren-delay 0)
 
