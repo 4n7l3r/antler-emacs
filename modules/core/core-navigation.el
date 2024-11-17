@@ -53,23 +53,55 @@
   :init
   (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
 
-(use-package dirvish
+(use-package ranger
   :ensure t
-  :init
-  (dirvish-override-dired-mode)
+  :defer t
   :custom
-  (dirvish-quick-access-entries
-   '(("e" "~/.config/" "Emacs Config")
-     ("o" "~/org" "Org")))
+  ;; Be evil if evil-mode is enabled
+  (ranger-override-dired 'ranger)      ; Use ranger instead of dired
+  (ranger-cleanup-on-disable t)        ; Kill buffers when closing ranger
+  (ranger-cleanup-eagerly t)           ; Kill buffers as you move
+  (ranger-show-hidden t)               ; Show hidden files
+  (ranger-show-preview t)              ; Show previews
+  (ranger-preview-file t)              ; Preview files
+  (ranger-width-preview 0.5)           ; Preview window width
+  (ranger-max-preview-size 10)         ; Don't preview files > 10MB
+  (ranger-dont-show-binary t)          ; Don't show binary files in preview
+
+  ;; Parent window settings
+  (ranger-parent-depth 2)              ; Number of parent directories to show
+  (ranger-width-parents 0.12)          ; Width of parent windows
+  (ranger-max-parent-width 0.12)       ; Max width of parent windows
+
+  ;; Header customization
+  (ranger-header-func 'ranger-header-line) ; Default header style
+  (ranger-modify-header t)                 ; Modify header
+
+  ;; Sorting and filtering
+  (ranger-sorting-switches "-alh")     ; Default sorting
+  (ranger-persistent-sort t)           ; Remember sorting
+
+  ;; Preview customization
+  (ranger-excluded-extensions '("mkv" "iso" "mp4")) ; Don't preview these
+  (ranger-preview-delay 0.040)         ; Delay before showing preview
+
   :config
-  (dirvish-override-dired-mode)
-  (dirvish-peek-mode)
-  (dirvish-side-follow-mode)
-  (setq dirvish-attributes
-      '(vc-state file-size git-msg subtree-state all-the-icons collapse file-time))
-  (setq dirvish-mode-line-format '(:left (sort symlink) :right (vc-info yank index)))
-  (setq dirvish-header-line-height '(25 . 35))
-  (setq dirvish-header-line-format '(:left (path) :right (free-space)))
-  (setq dired-listing-switches
-      "-l --almost-all --human-readable --group-directories-first --no-group"))
+  ;; Additional hooks
+  (add-hook 'ranger-mode-hook
+            (lambda ()
+              (setq-local line-spacing 3)      ; Add some line spacing
+              (setq-local cursor-type 'bar)    ; Use bar cursor
+              (hl-line-mode 1)))               ; Highlight current line
+
+  ;; Custom functions
+  (defun antler/ranger-search-files ()
+    "Search files in current directory using consult."
+    (interactive)
+    (consult-find (ranger-current-directory)))
+
+  :bind
+  (:map global-map
+        ("C-x d" . ranger)
+        ("C-x C-d" . deer)))
+
 (provide 'core-navigation)

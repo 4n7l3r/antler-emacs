@@ -51,9 +51,9 @@
   :after (treemacs projectile)
   :ensure t)
 
-(use-package treemacs-icons-dired
-  :hook (dired-mode . treemacs-icons-dired-enable-once)
-  :ensure t)
+;; (use-package treemacs-icons-dired
+;;   :hook (dired-mode . treemacs-icons-dired-enable-once)
+;;   :ensure t)
 
 (use-package treemacs-all-the-icons
   :ensure t

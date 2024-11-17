@@ -5,20 +5,38 @@
   :type 'directory
   :group 'antler)
 
-(defcustom antler/org-roam-directory (concat (getenv "HOME") "/org")
+(defcustom antler/org-roam-directory (concat antler/org-directory "/roam")
   "Base directory for org files."
   :type 'directory
   :group 'antler)
 
+(defun antler/org-remap-move-keys ()
+  "Disable M-<arrow> keybindings in Org mode for list manipulation."
+  (let ((keys '("<M-up>" "<M-down>" "<M-left>" "<M-right>")))
+    (dolist (key keys)
+      (define-key org-mode-map (kbd key) nil))))
+
+(require 'org-hypothesis)
+
 (use-package org
   :hook ((org-mode . org-indent-mode)
 	 (org-mode . visual-line-mode)
-	 (org-mode . variable-pitch-mode))
+	 (org-mode . variable-pitch-mode)
+	 (org-mode . antler/org-remap-move-keys)
+	 (org-mode . org-hypothesis-mode)
+	 (org-mode . (lambda()
+		       (auto-fill-mode 1)
+		       (setq fill-column 180))))
   :config
   (setq org-directory antler/org-directory)
-  (setq org-default-notes-file (concat org-directory "/notes.org"))
-  (setq org-agenda-files (concat org-directory "/tasks.org"))
+  (setq org-default-notes-file (concat antler/org-directory "/notes.org"))
+  (setq org-agenda-files (list
+			  (concat antler/org-directory "tasks")
+			  (concat antler/org-directory "roam")
+			  antler/org-directory))
+  (setq org-log-done 'time)
   (setq org-return-follows-link t)
+  (setq org-hide-emphasis-markers t)
   (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
   (add-hook 'org-mode-hook 'org-indent-mode)
   (org-babel-do-load-languages
@@ -27,23 +45,36 @@
     (lambda (pair)
       (locate-library (concat "ob-" (symbol-name (car pair)))))
     '((R . t)
-      (ditaa . t)
-      (dot . t)
-      (emacs-lisp . t)
+      (awk . t)
+      (C . t)
+      (cpp . t)
+      (calc . t)
+      (shell . t)
+      (clojure . t)
+      (css . t)
+      (eshell . t)
       (gnuplot . t)
-      (haskell . nil)
+      (sed . t)
+      (dot . t)
+      (java . t)
+      (julia . t)
       (latex . t)
-      (ledger . t)
-      (ocaml . nil)
-      (octave . t)
+      (lisp . t)
+      (lua . t)
+      (makefile . t)
+      (js . t)
+      (org . t)
       (plantuml . t)
       (python . t)
-      (ruby . t)
-      (screen . nil)
-      (sh . t) ;; obsolete
-      (shell . t)
+      (scheme . t)
       (sql . t)
-      (sqlite . t)))))
+      (sqlite . t)
+      (emacs-lisp . t)))))
+
+(message "Org mode loaded")
+
+(use-package org-inlinetask
+  :after org)
 
 (use-package org-roam
   :ensure t

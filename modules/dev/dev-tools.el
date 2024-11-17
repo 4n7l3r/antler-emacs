@@ -11,19 +11,57 @@
   :config
   (projectile-mode +1))
 
+(setq vc-handled-backends '(Git))
+(setq vc-make-backup-files nil)
+
+(use-package vc
+  :custom
+  (vc-follow-symlinks t)
+  (vc-suppress-confirm t)
+  :config
+  ;; Add error handling for VC processes
+  (defun antler/vc-process-sentinel (process _msg)
+    "Handle VC process errors gracefully."
+    (when (memq (process-status process) '(exit signal))
+      (unless (= (process-exit-status process) 0)
+        (message "VC process failed with status %d"
+                 (process-exit-status process)))))
+
+  (advice-add 'vc-process-sentinel :around
+              (lambda (orig-fun &rest args)
+                (condition-case err
+                    (apply orig-fun args)
+                  (error
+                   (message "VC Error: %s" (error-message-string err))
+                   nil)))))
+
 (use-package magit
   :ensure t
   :defer t
   :bind (("C-x g" . magit-status))
   :custom
-  (magit-display-buffer-function
-   #'magit-display-buffer-same-window-except-diff-v1)
-  (magit-save-repository-buffers 'dontask))
+  (magit-process-finish-apply-ansi-colors t)
+  (magit-process-popup-time 10)
+  (magit-process-log-max 30)
+  :config
+  ;; Handle Git process errors
+  (defun antler/magit-process-sentinel (process event)
+    "Handle Magit process errors gracefully."
+    (when (memq (process-status process) '(exit signal))
+      (unless (= (process-exit-status process) 0)
+        (message "Git process failed: %s" event))))
+
+  (advice-add 'magit-process-sentinel :around
+              (lambda (orig-fun &rest args)
+                (condition-case err
+                    (apply orig-fun args)
+                  (error
+                   (message "Magit Error: %s" (error-message-string err))
+                   nil)))))
 
 (use-package git-modes
   :ensure t
   :defer t)
-
 
 (use-package editorconfig
   :ensure t

@@ -66,3 +66,4 @@ org-roam.db
 .dap-breakpoints
 places
 /projectile.cache
+/bookmarks

@@ -8,12 +8,6 @@
 
 (global-set-key (kbd "S-<return>") 'sanityinc/newline-at-end-of-line)
 
-(when (fboundp 'display-line-numbers-mode)
-  (setq-default display-line-numbers-width 3)
-  (add-hook 'prog-mode-hook 'display-line-numbers-mode)
-  (add-hook 'yaml-mode-hook 'display-line-numbers-mode)
-  (add-hook 'yaml-ts-mode-hook 'display-line-numbers-mode))
-
 (when (boundp 'display-fill-column-indicator)
   (setq-default indicate-buffer-boundaries 'left)
   (setq-default display-fill-column-indicator-character ?<)
@@ -33,14 +27,13 @@
 
 (use-package desktop
   :custom
-  (desktop-restore-frames t)        ; Remember frame parameters
-  (desktop-save t)                  ; Always save desktop
+  (desktop-restore-frames t)
+  (desktop-save t)
   :config
   (desktop-save-mode 1))
 
 ;; Save window parameters between sessions
 (add-to-list 'desktop-globals-to-save 'default-frame-alist)
-
 
 (use-package browse-kill-ring
   :ensure t
@@ -57,17 +50,6 @@
   :config
   (add-to-list 'page-break-lines-modes 'browse-kill-ring-mode))
 
-;; Don't disable narrowing commands
-(put 'narrow-to-region 'disabled nil)
-(put 'narrow-to-page 'disabled nil)
-(put 'narrow-to-defun 'disabled nil)
-;; Don't disable case-change functions
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
-
-(when (fboundp 'repeat-mode)
-  (add-hook 'after-init-hook 'repeat-mode))
-
 (use-package avy
   :ensure t
   :init
@@ -81,44 +63,7 @@
   (global-set-key (kbd "C-+") 'mc/mark-next-like-this)
   (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
 
-(defun antler/kill-back-to-indentation ()
-  "Kill from point back to the first non-whitespace character on the line."
-  (interactive)
-  (let ((prev-pos (point)))
-    (back-to-indentation)
-    (kill-region (point) prev-pos)))
 
-(global-set-key (kbd "C-M-<backspace>") 'antler/kill-back-to-indentation)
-
-(global-set-key (kbd "M-j") 'join-line)
-
-;; Random line sorting
-(defun sanityinc/sort-lines-random (beg end)
-  "Sort lines in region from BEG to END randomly."
-  (interactive "r")
-  (save-excursion
-    (save-restriction
-      (narrow-to-region beg end)
-      (goto-char (point-min))
-      (let ;; To make `end-of-line' and etc. to ignore fields.
-          ((inhibit-field-text-motion t))
-        (sort-subr nil 'forward-line 'end-of-line nil nil
-                   (lambda (s1 s2) (eq (random 2) 0)))))))
-
-(defun antler/sort-lines-alphabetically (beg end)
-  "Sort lines in region from BEG to END alphabetically."
-  (interactive "r")
-  (save-excursion
-    (save-restriction
-      (narrow-to-region beg end)
-      (goto-char (point-min))
-      (let ((inhibit-field-text-motion t))  ; To make `end-of-line' and etc. to ignore fields.
-        (sort-subr nil 'forward-line 'end-of-line nil nil
-                   (lambda (s1 s2) (string< (buffer-substring (car s1) (cdr s1))
-                                       (buffer-substring (car s2) (cdr s2)))))))))
-
-(global-set-key (kbd "C-M-r") 'sanityinc/sort-lines-random)
-(global-set-key (kbd "C-M-a") 'antler/sort-lines-alphabetically)
 
 (use-package highlight-escape-sequences
   :ensure t
@@ -166,7 +111,7 @@ ORIG is the advised function, which is called with its ARGS."
 
 (setq ibuffer-filter-group-name-face 'font-lock-doc-face)
 
-(global-set-key (kbd "C-x C-b") 'ibuffer)
+
 
 ;; Settings for tracking recent files
 (add-hook 'after-init-hook 'recentf-mode)
@@ -174,8 +119,6 @@ ORIG is the advised function, which is called with its ARGS."
 (setq-default
  recentf-max-saved-items 1000
  recentf-exclude `("/tmp/" "/ssh:" ,(concat package-user-dir "/.*-autoloads\\.el\\'")))
-
-(global-set-key (kbd "M-/") 'hippie-expand)
 
 (setq hippie-expand-try-functions-list
       '(try-complete-file-name-partially
@@ -187,7 +130,7 @@ ORIG is the advised function, which is called with its ARGS."
 ;; Parentheses
 ;;(electric-pair-mode 1)
 (show-paren-mode 1)
-(setq show-paren-delay 0)
+(setq show-paren-delay 0.1)
 
 ;; Whitespace
 (setq-default show-trailing-whitespace t)
