@@ -4,7 +4,7 @@
   :ensure t
   :custom
   (corfu-cycle t)
-  (corfu-auto t)                      ; Disable auto completion
+  (corfu-auto t)
   (corfu-auto-prefix 2)
   (corfu-auto-delay 0.25)
   (corfu-min-width 80)

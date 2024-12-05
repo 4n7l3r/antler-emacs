@@ -6,7 +6,7 @@
   (doom-themes-enable-bold t)
   (doom-themes-enable-italic t)
   :config
-  (load-theme 'doom-nord t)
+  (load-theme 'doom-1337 t)
 
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
