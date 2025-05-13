@@ -1,56 +1,45 @@
 ;;; core-packages.el --- Package management -*- lexical-binding: t -*-
 (require 'cl-lib)
 
-;; Initialize package archives before elpaca
-(setq package-archives '(("gnu" . "http://mirrors.163.com/elpa/gnu/")
-                        ("melpa" . "https://melpa.org/packages/")
-                        ("org" . "http://orgmode.org/elpa/")))
+;; Initialize straight.el
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-;; Initialize package sources
-(defvar elpaca-installer-version 0.8)
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                              :ref nil :depth 1
-                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-                              :build (:not elpaca--activate-package)))
-(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-       (build (expand-file-name "elpaca/" elpaca-builds-directory))
-       (order (cdr elpaca-order))
-       (default-directory repo))
-  (add-to-list 'load-path (if (file-exists-p build) build repo))
-  (unless (file-exists-p repo)
-    (make-directory repo t)
-    (when (< emacs-major-version 28) (require 'subr-x))
-    (condition-case-unless-debug err
-        (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-                                                  ,@(when-let* ((depth (plist-get order :depth)))
-                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
-                                                  ,(plist-get order :repo) ,repo))))
-                  ((zerop (call-process "git" nil buffer t "checkout"
-                                        (or (plist-get order :ref) "--"))))
-                  (emacs (concat invocation-directory invocation-name))
-                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-                  ((require 'elpaca))
-                  ((elpaca-generate-autoloads "elpaca" repo)))
-            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-          (error "%s" (with-current-buffer buffer (buffer-string))))
-      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
-  (unless (require 'elpaca-autoloads nil t)
-    (require 'elpaca)
-    (elpaca-generate-autoloads "elpaca" repo)
-    (load "./elpaca-autoloads")))
-(add-hook 'after-init-hook #'elpaca-process-queues)
-(elpaca `(,@elpaca-order))
+;; Configure straight.el
+(setq straight-use-package-by-default t)
+(setq straight-check-for-modifications '(check-on-save find-when-checking))
+(setq straight-vc-git-default-clone-depth 1)  ;; Shallow clone for faster downloads
 
-;; Install and configure use-package
-(elpaca elpaca-use-package
-  (elpaca-use-package-mode)
-  (setq elpaca-use-package-by-default nil))
+;; Use use-package with straight.el
+(straight-use-package 'use-package)
+(setq use-package-always-ensure nil)  ;; Not needed with straight.el
+(setq use-package-always-defer nil)   ;; Don't defer by default
+(setq use-package-expand-minimally t) ;; Performance optimization
+(setq use-package-compute-statistics t) ;; For M-x use-package-report
 
+;; Initialize package archives
+(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+                        ("melpa" . "https:/q/melpa.org/packages/")
+                        ("org" . "https://orgmode.org/elpa/")))
+
+;; Check if directories exist and create them if needed
+(let ((dirs '("~/org" "~/org/roam" "~/.cache/emacs/backups")))
+  (dolist (dir dirs)
+    (let ((dir-path (expand-file-name dir)))
+      (unless (file-exists-p dir-path)
+        (make-directory dir-path t)))))
+
+;; Enable improved package management for built-in packages
 (setq package-install-upgrade-built-in t)
 
 (provide 'core-packages)

@@ -1,25 +1,25 @@
 ;;; lang-elisp.el --- Emacs Lisp configuration -*- lexical-binding: t -*-
 ;; First, ensure the package is installed
 (use-package rainbow-delimiters
-  :ensure t
+  :straight t
   :defer t  ; Defer loading until needed
   :hook
   ((prog-mode . rainbow-delimiters-mode)
    (emacs-lisp-mode . rainbow-delimiters-mode)))
 
-(use-package elisp-mode
-  :after rainbow-delimiters
-  :hook
-  (emacs-lisp-mode . (lambda ()
-                       (setq mode-name "ELisp")
-                       (eldoc-mode)
-                       (rainbow-delimiters-mode)
-                       (prettify-symbols-mode)))
-  :bind
-  (:map emacs-lisp-mode-map
-        ("C-c C-b" . eval-buffer)
-        ("C-c C-c" . eval-defun)
-        ("C-c C-r" . eval-region)))
+;; Emacs Lisp mode configuration (built-in)
+(add-hook 'emacs-lisp-mode-hook
+          (lambda ()
+            (setq mode-name "ELisp")
+            (eldoc-mode)
+            (rainbow-delimiters-mode)
+            (prettify-symbols-mode)))
+
+;; Keybindings for emacs-lisp-mode
+(with-eval-after-load 'elisp-mode
+  (define-key emacs-lisp-mode-map (kbd "C-c C-b") 'eval-buffer)
+  (define-key emacs-lisp-mode-map (kbd "C-c C-c") 'eval-defun)
+  (define-key emacs-lisp-mode-map (kbd "C-c C-r") 'eval-region))
 
 (use-package eldoc
   :custom
@@ -29,18 +29,18 @@
   (global-eldoc-mode))
 
 (use-package macrostep
-  :ensure t
+  :straight t
   :bind
   (:map emacs-lisp-mode-map
         ("C-c e" . macrostep-expand)))
 
 (use-package eros
-  :ensure t
+  :straight t
   :hook
   (emacs-lisp-mode . eros-mode))
 
 (use-package elisp-slime-nav
-  :ensure t
+  :straight t
   :hook
   ((emacs-lisp-mode ielm-mode) . elisp-slime-nav-mode))
 
@@ -75,7 +75,7 @@
   (define-key emacs-lisp-mode-map (kbd "C-c C-e") 'pp-eval-expression))
 
 (use-package ipretty
-  :ensure t
+  :straight t
   :init
   (add-hook 'after-init-hook 'ipretty-mode))
 
@@ -124,7 +124,7 @@ there is no current file, eval the current buffer."
 
 ;; Automatic byte compilation
 (use-package auto-compile
-  :ensure t
+  :straight t
   :init
   (setq auto-compile-delete-stray-dest nil)
   (add-hook 'after-init-hook 'auto-compile-on-save-mode)
@@ -133,7 +133,7 @@ there is no current file, eval the current buffer."
   (setq load-prefer-newer t))
 
 (use-package immortal-scratch
-  :ensure t
+  :straight t
   :init
   (add-hook 'after-init-hook 'immortal-scratch-mode))
 
@@ -169,7 +169,7 @@ there is no current file, eval the current buffer."
   (run-hooks 'sanityinc/lispy-modes-hook))
 
 (use-package helpful
-  :ensure t
+  :straight t
   :bind
   (("C-h f" . helpful-callable)
    ("C-h v" . helpful-variable)

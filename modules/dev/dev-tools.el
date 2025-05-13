@@ -1,6 +1,6 @@
 ;;; dev-tools.el --- Project management tools -*- lexical-binding: t -*-
 (use-package projectile
-  :ensure t
+  :straight t
   :defer 1
   :bind-keymap
   ("C-c p" . projectile-command-map)
@@ -36,7 +36,7 @@
                    nil)))))
 
 (use-package magit
-  :ensure t
+  :straight t
   :defer t
   :bind (("C-x g" . magit-status))
   :custom
@@ -60,17 +60,17 @@
                    nil)))))
 
 (use-package git-modes
-  :ensure t
+  :straight t
   :defer t)
 
 (use-package editorconfig
-  :ensure t
+  :straight t
   :defer 1
   :config
   (editorconfig-mode 1))
 
 (use-package hl-todo
-  :ensure t
+  :straight t
   :hook (prog-mode . hl-todo-mode)
   :custom
   (hl-todo-keyword-faces
@@ -80,16 +80,18 @@
      ("NOTE"   . "#28B463"))))
 
 (use-package command-log-mode
-  :ensure t
+  :straight t
   :defer t
   :commands command-log-mode)
 
 (use-package discover-my-major
-  :ensure t
+  :straight t
   :bind (("C-h C-m" . discover-my-major)))
 
-(use-package treesit
-  :preface
+;; Tree-sitter support for Emacs 29+
+(when (and (fboundp 'treesit-available-p)
+           (treesit-available-p))
+  ;; Set up tree-sitter language sources
   (setq treesit-language-source-alist '())
 
   ;; Function to install missing grammars
@@ -101,16 +103,16 @@
         (unless (treesit-language-available-p lang)
           (treesit-install-language-grammar lang)))))
 
-  :config
   ;; Auto-install missing grammars
-  (antler/treesit-install-grammars))
-
-(use-package treesit-auto
-  :ensure t
-  :custom
-  (treesit-auto-install 'prompt)
-  :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
+  (antler/treesit-install-grammars)
+  
+  ;; Use treesit-auto if available
+  (use-package treesit-auto
+    :straight t
+    :custom
+    (treesit-auto-install 'prompt)
+    :config
+    (treesit-auto-add-to-auto-mode-alist 'all)
+    (global-treesit-auto-mode)))
 
 (provide 'dev-tools)

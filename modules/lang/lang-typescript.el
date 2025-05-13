@@ -9,7 +9,7 @@
              '(tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src"))
 
 (use-package typescript-ts-mode
-  :elpaca nil
+  :straight nil  ;; Built-in mode, no need to install
   :mode (("\\.ts\\'" . typescript-ts-mode)
          ("\\.tsx\\'" . tsx-ts-mode))
   :hook ((typescript-ts-mode . lsp-deferred)

@@ -1,7 +1,7 @@
 ;;; core-navigation.el --- Navigation enhancement tools -*- lexical-binding: t -*-
 
 (use-package ace-window
-  :ensure t
+  :straight t
   :bind (("M-o" . ace-window))
   :custom
   (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
@@ -22,7 +22,7 @@
   (aw-dispatch-always t))
 
 (use-package which-key
-  :ensure t
+  :straight t
   :defer 1
   :custom
   (which-key-idle-delay 0.5)
@@ -36,7 +36,7 @@
   (when gls (setq insert-directory-program gls)))
 
 (use-package diredfl
-  :ensure t
+  :straight t
   :after dired
   :init
   (diredfl-global-mode)
@@ -48,13 +48,13 @@
 
 
 (use-package diff-hl
-  :ensure t
+  :straight t
   :after dired
   :init
   (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
 
 (use-package ranger
-  :ensure t
+  :straight t
   :defer t
   :custom
   ;; Be evil if evil-mode is enabled

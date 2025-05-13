@@ -7,7 +7,7 @@
              '(python "https://github.com/tree-sitter/tree-sitter-python"))
 
 (use-package python-ts-mode
-  :elpaca nil
+  :straight nil  ;; Built-in mode, no need to install
   :mode "\\.py\\'"
   :hook (python-ts-mode . lsp-deferred)
   :config

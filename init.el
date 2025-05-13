@@ -10,48 +10,95 @@
 (dolist (dir '("core" "completion" "dev" "lang" "org-mode" "ui"))
   (add-to-list 'load-path (expand-file-name dir modules-dir)))
 
-;; Ensure elpaca directories exist before loading core-packages
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+;; Straight.el debugging and error handling
+(setq straight-check-for-modifications '(find-when-checking))
+(setq straight-vc-git-default-protocol 'https)  ;; Use HTTPS instead of SSH
+(setq straight-fix-org nil)  ;; Don't build org-mode twice
+(setq straight-disable-native-compile nil) ;; Enable native compilation if available
 
-;; Create necessary directories
-(dolist (dir (list elpaca-directory elpaca-builds-directory elpaca-repos-directory))
-  (unless (file-exists-p dir)
-    (make-directory dir t)))
+;; Set up error handling for network issues
+(defvar network-retry-count 0)
+(defun handle-network-errors (orig-fun &rest args)
+  "Handle network errors gracefully in ORIG-FUN with ARGS."
+  (condition-case err
+      (apply orig-fun args)
+    (error
+     (if (and (< network-retry-count 3)
+              (string-match-p "Failed to run \"git\"" (error-message-string err)))
+         (progn
+           (setq network-retry-count (1+ network-retry-count))
+           (message "Network error, retrying in 2 seconds... (attempt %d/3)" network-retry-count)
+           (sit-for 2)
+           (apply #'handle-network-errors orig-fun args))
+       (signal (car err) (cdr err))))))
+
+(advice-add 'straight--clone-repository :around #'handle-network-errors)
 
 ;; Core modules
-(require 'core-packages)
-(require 'core-performance)
-(require 'core-ui)
-(require 'core-keybindings)
-(require 'core-navigation)
-(require 'core-editor)
-(require 'core-search)
+(require 'core-packages)     ;; Package management
+(require 'core-performance)  ;; Performance optimizations
+
+;; Load theme first to ensure UI is consistent
+(require 'ui-theme)          ;; Theme configuration
+
+;; Then load other UI components
+(require 'core-ui)           ;; Basic UI settings
+(require 'core-keybindings)  ;; Global keybindings
+(require 'core-navigation)   ;; Navigation helpers
+(require 'core-editor)       ;; Editor behavior
+(require 'core-search)       ;; Search functionality
 
 ;; Completion modules
-(require 'completion-corfu)
-(require 'completion-vertico)
-(require 'completion-consult)
+(require 'completion-corfu)   ;; In-buffer completion
+(require 'completion-vertico)  ;; Minibuffer completion
+(require 'completion-consult)  ;; Enhanced commands
 
 ;; Development modules
-(require 'dev-lsp)
-(require 'dev-tools)
-(require 'dev-treemacs)
-(require 'dev-debug)
+(require 'dev-lsp)        ;; Language server protocol
+(require 'dev-tools)      ;; Development tools
+(require 'dev-treemacs)   ;; File tree
+(require 'dev-debug)      ;; Debugging support
+(require 'dev-project)    ;; Project management
+(require 'dev-terminal)   ;; Terminal integration
 
-;; Language modules
-(require 'lang-elisp)
-(require 'lang-go)
-;;(require 'lang-rust)
+;; Language modules - uncomment as needed
+(require 'lang-elisp)     ;; Emacs Lisp
+(require 'lang-go)        ;; Go
+(when (locate-library "modules/lang/lang-rust")
+  (require 'lang-rust))   ;; Rust (conditionally loaded)
+(when (locate-library "modules/lang/lang-python")
+  (require 'lang-python)) ;; Python (conditionally loaded)
+(when (locate-library "modules/lang/lang-typescript")
+  (require 'lang-typescript)) ;; TypeScript (conditionally loaded)
 
 ;; ORG Mode
 (require 'org-mode)
 (require 'org-hypothesis)
 
-;; UI modules
-(require 'ui-theme)
-;; (require 'ui-modeline)
+;; UI modules - load last for consistent appearance
+(require 'ui-modeline)   ;; Mode line configuration
+
+;; Load personal customizations if they exist
+(when (file-exists-p (expand-file-name "personal.el" modules-dir))
+  (add-to-list 'load-path modules-dir)
+  (require 'personal))
+
+;; Restore normal GC threshold after startup is complete
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq gc-cons-threshold (* 20 1024 1024))
+            (when (boundp 'gcmh-high-cons-threshold)
+              (setq gcmh-high-cons-threshold (* 20 1024 1024)))
+            (message "Emacs ready in %s with %d garbage collections."
+                     (format "%.2f seconds"
+                             (float-time
+                              (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
+
+;; Disable debug-on-error after startup
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq debug-on-error nil)))
 
 (provide 'init)
 
@@ -61,7 +108,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("4b6cc3b60871e2f4f9a026a5c86df27905fb1b0e96277ff18a76a39ca53b82e1"
+   '("d481904809c509641a1a1f1b1eb80b94c58c210145effc2631c1a7f2e4a2fdf4"
+     "4b6cc3b60871e2f4f9a026a5c86df27905fb1b0e96277ff18a76a39ca53b82e1"
      "7c28419e963b04bf7ad14f3d8f6655c078de75e4944843ef9522dbecfcd8717d"
      "4594d6b9753691142f02e67b8eb0fda7d12f6cc9f1299a49b819312d6addad1d"
      "ffafb0e9f63935183713b204c11d22225008559fa62133a69848835f4f4a758c"
@@ -75,8 +123,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
- ;; Local Variables:
+
+;; Local Variables:
 ;; coding: utf-8
 ;; no-byte-compile: t
 ;; End:
+
 ;;; init.el ends here

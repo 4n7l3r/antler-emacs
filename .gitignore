@@ -57,7 +57,7 @@ site-lisp/package/
 /eln-cache/
 /projects
 /forge-*.sqlite
-/projectile.cache.cache
+/projectile.cache
 /auto-save-list
 /eln-cache
 /elpaca
@@ -65,5 +65,55 @@ site-lisp/package/
 org-roam.db
 .dap-breakpoints
 places
-/projectile.cache
 /bookmarks
+
+# Straight.el package manager
+/straight/build
+/straight/build-cache.el
+/straight/repos
+!/straight/versions
+
+# Cache files
+/.nerd-icons-checked
+/.nerd-icons-skip-font-check
+
+# LSP and eglot related
+.lsp-session-*
+.eglot-*
+.extension
+/.cache/lsp/
+/workspace/
+
+# Directory environment
+.envrc
+.direnv/
+
+# Project/workspace specific
+.project
+.projectile
+.dir-locals.el
+
+# Personal files and customizations
+personal.el
+custom-post.el
+
+# macOS/desktop specific
+.DS_Store
+.directory
+desktop.ini
+Thumbs.db
+
+# Desktop save
+.emacs.desktop*
+
+# Recently opened files
+/recentf
+/recentf-save.el
+
+# Backup files
+*~
+\#*\#
+.\#*
+*.bak
+*.swp
+*.sav

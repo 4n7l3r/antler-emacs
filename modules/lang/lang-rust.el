@@ -1,7 +1,7 @@
 ;;; lang-rust.el --- Rust configuration -*- lexical-binding: t -*-
 
 (use-package rust-mode
-  :ensure t
+  :straight t
   :hook ((rust-mode . lsp-deferred)
 	 (rust-mode . prettify-symbols-mode)
          (rust-mode . (lambda ()

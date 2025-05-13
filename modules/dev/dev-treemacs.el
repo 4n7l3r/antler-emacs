@@ -1,6 +1,6 @@
 ;;; dev-treemacs.el --- Treemacs configuration -*- lexical-binding: t -*-
 (use-package treemacs
-  :ensure t
+  :straight t
   :defer t
   :custom
   (treemacs-collapse-dirs 3)
@@ -49,20 +49,20 @@
 
 (use-package treemacs-projectile
   :after (treemacs projectile)
-  :ensure t)
+  :straight t)
 
 ;; (use-package treemacs-icons-dired
 ;;   :hook (dired-mode . treemacs-icons-dired-enable-once)
-;;   :ensure t)
+;;   :straight t)
 
 (use-package treemacs-all-the-icons
-  :ensure t
+  :straight t
   :after treemacs
   :config
   (treemacs-load-theme "all-the-icons"))
 
 (use-package treemacs-magit
   :after (treemacs magit)
-  :ensure t)
+  :straight t)
 
 (provide 'dev-treemacs)

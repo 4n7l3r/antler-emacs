@@ -30,9 +30,11 @@
 (global-set-key (kbd "C-z") 'sanityinc/maybe-suspend-frame)
 
 ;; Font configuration
-(set-face-attribute 'default nil :font "FiraCode Nerd Font" :height 120)
-(set-face-attribute 'fixed-pitch nil :font "FiraCode Nerd Font Mono" :height 120)
-(set-face-attribute 'variable-pitch nil :font "FiraCode Nerd Font" :height 120 :weight 'regular)
+;;; Note: Font settings moved to ui-theme.el
+;; Commented out to avoid conflicts with ui-theme.el settings
+;; (set-face-attribute 'default nil :font "FiraCode Nerd Font" :height 120)
+;; (set-face-attribute 'fixed-pitch nil :font "FiraCode Nerd Font Mono" :height 120)
+;; (set-face-attribute 'variable-pitch nil :font "FiraCode Nerd Font" :height 120 :weight 'regular)
 
 ;; Window size and features
 (setq-default window-resize-pixelwise t
@@ -72,7 +74,7 @@
             (setq line-spacing 0)))
 
 (use-package default-text-scale
-  :ensure t
+  :straight t
   :init
   (add-hook 'after-init-hook 'default-text-scale-mode))
 

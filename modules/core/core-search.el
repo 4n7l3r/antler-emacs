@@ -1,7 +1,7 @@
 ;;; tools-search.el --- Search tools configuration -*- lexical-binding: t -*-
 
 (use-package ag
-  :ensure t
+  :straight t
   :defer t
   :custom
   (ag-highlight-search t)

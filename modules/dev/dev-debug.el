@@ -1,7 +1,7 @@
 ;;; dev-debug.el --- Debugging configuration -*- lexical-binding: t -*-
 
 (use-package dape
-  :ensure t
+  :straight t
   ;; :hook
   ;; Save breakpoints on quit
   ;; ((kill-emacs . dape-breakpoint-save)
