@@ -4,6 +4,7 @@
 
 ;; Produce backtraces when errors occur: can be helpful to diagnose startup issues
 (setq debug-on-error t)
+(setq byte-compile-warnings '(not lexical))
 
 ;; Add all module directories to load-path first
 (defvar modules-dir (expand-file-name "modules" user-emacs-directory))

@@ -1,4 +1,4 @@
-;;; core-edi
+;;; core-editor.el --- Editor configuration -*- lexical-binding: t -*-
 
 ;; Disable line numbers in specific modes
 (dolist (mode '(term-mode-hook
