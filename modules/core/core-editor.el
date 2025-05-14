@@ -6,7 +6,7 @@
                 eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
-(global-set-key (kbd "S-<return>") 'sanityinc/newline-at-end-of-line)
+(bind-key "S-<return>" 'sanityinc/newline-at-end-of-line)
 
 (when (boundp 'display-fill-column-indicator)
   (setq-default indicate-buffer-boundaries 'left)
@@ -19,11 +19,11 @@
   :init
   (dolist (hook '(prog-mode-hook html-mode-hook yaml-mode-hook conf-mode-hook))
     (add-hook hook 'symbol-overlay-mode))
-  :config
-  (define-key symbol-overlay-mode-map (kbd "M-i") 'symbol-overlay-put)
-  (define-key symbol-overlay-mode-map (kbd "M-I") 'symbol-overlay-remove-all)
-  (define-key symbol-overlay-mode-map (kbd "M-n") 'symbol-overlay-jump-next)
-  (define-key symbol-overlay-mode-map (kbd "M-p") 'symbol-overlay-jump-prev))
+  :bind (:map symbol-overlay-mode-map
+              ("M-i" . symbol-overlay-put)
+              ("M-I" . symbol-overlay-remove-all)
+              ("M-n" . symbol-overlay-jump-next)
+              ("M-p" . symbol-overlay-jump-prev)))
 
 (use-package desktop
   :custom
@@ -39,11 +39,11 @@
   :ensure t
   :init
   (setq browse-kill-ring-separator "\f")
-  (global-set-key (kbd "M-Y") 'browse-kill-ring)
-  :config
-  (define-key browse-kill-ring-mode-map (kbd "C-g") 'browse-kill-ring-quit)
-  (define-key browse-kill-ring-mode-map (kbd "M-n") 'browse-kill-ring-forward)
-  (define-key browse-kill-ring-mode-map (kbd "M-p") 'browse-kill-ring-previous))
+  :bind (("M-Y" . browse-kill-ring)
+         :map browse-kill-ring-mode-map
+         ("C-g" . browse-kill-ring-quit)
+         ("M-n" . browse-kill-ring-forward)
+         ("M-p" . browse-kill-ring-previous)))
 
 (use-package page-break-lines
   :ensure t
@@ -52,16 +52,15 @@
 
 (use-package avy
   :ensure t
-  :init
-  (global-set-key (kbd "C-;") 'avy-goto-char-timer))
+  :bind (("C-;" . avy-goto-char-timer)
+         ("M-g g" . avy-goto-line)))
 
 (use-package multiple-cursors
   :ensure t
-  :init
-  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-  (global-set-key (kbd "C-+") 'mc/mark-next-like-this)
-  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
+  :bind (("C-<" . mc/mark-previous-like-this)
+         ("C->" . mc/mark-next-like-this)
+         ("C-+" . mc/mark-next-like-this)
+         ("C-c C-<" . mc/mark-all-like-this)))
 
 
 
@@ -89,6 +88,20 @@ ORIG is the advised function, which is called with its ARGS."
 (setq uniquify-after-kill-buffer-p t)
 (setq uniquify-ignore-buffers-re "^\\*")
 
+(use-package ibuffer
+  :bind (("C-x C-b" . ibuffer)
+         ("C-x k" . kill-this-buffer))
+  :config
+  ;; Use human readable Size column instead of original one
+  (define-ibuffer-column size-h
+    (:name "Size" :inline t)
+    (file-size-human-readable (buffer-size)))
+  
+  ;; Modify the default ibuffer-formats (toggle with `)
+  ;; TODO: add formats
+  
+  (setq ibuffer-filter-group-name-face 'font-lock-doc-face))
+
 (defun ibuffer-set-up-preferred-filters ()
   (ibuffer-vc-set-filter-groups-by-vc-root)
   (unless (eq ibuffer-sorting-mode 'filename/process)
@@ -100,17 +113,6 @@ ORIG is the advised function, which is called with its ARGS."
   (add-hook 'ibuffer-hook 'ibuffer-set-up-preferred-filters)
   (setq-default ibuffer-show-empty-filter-groups nil))
 
-(with-eval-after-load 'ibuffer
-  ;; Use human readable Size column instead of original one
-  (define-ibuffer-column size-h
-    (:name "Size" :inline t)
-    (file-size-human-readable (buffer-size))))
-
-;; Modify the default ibuffer-formats (toggle with `)
-;; TODO: add formats
-
-(setq ibuffer-filter-group-name-face 'font-lock-doc-face)
-
 
 
 ;; Settings for tracking recent files
@@ -120,12 +122,16 @@ ORIG is the advised function, which is called with its ARGS."
  recentf-max-saved-items 1000
  recentf-exclude `("/tmp/" "/ssh:" ,(concat package-user-dir "/.*-autoloads\\.el\\'")))
 
-(setq hippie-expand-try-functions-list
-      '(try-complete-file-name-partially
-        try-complete-file-name
-        try-expand-dabbrev
-        try-expand-dabbrev-all-buffers
-        try-expand-dabbrev-from-kill))
+(use-package hippie-exp
+  :bind (([remap dabbrev-expand] . hippie-expand)
+         ("M-/" . hippie-expand))
+  :config
+  (setq hippie-expand-try-functions-list
+        '(try-complete-file-name-partially
+          try-complete-file-name
+          try-expand-dabbrev
+          try-expand-dabbrev-all-buffers
+          try-expand-dabbrev-from-kill)))
 
 ;; Parentheses
 ;;(electric-pair-mode 1)

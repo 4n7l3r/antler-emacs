@@ -10,10 +10,12 @@
 (set-fringe-mode 10)
 
 ;;; Integrate with terminals such as xterm
-(global-set-key [mouse-4] (lambda () (interactive) (scroll-down 1)))
-(global-set-key [mouse-5] (lambda () (interactive) (scroll-up 1)))
-
-(autoload 'mwheel-install "mwheel")
+(use-package mwheel
+  :bind
+  ([mouse-4] . (lambda () (interactive) (scroll-down 1)))
+  ([mouse-5] . (lambda () (interactive) (scroll-up 1)))
+  :init
+  (autoload 'mwheel-install "mwheel"))
 
 (defun sanityinc/console-frame-setup ()
   (xterm-mouse-mode 1) ; Mouse in a terminal (Use shift to paste with middle button)
@@ -27,7 +29,7 @@
   (unless (and *is-a-mac* window-system)
     (suspend-frame)))
 
-(global-set-key (kbd "C-z") 'sanityinc/maybe-suspend-frame)
+(bind-key "C-z" 'sanityinc/maybe-suspend-frame)
 
 ;; Font configuration
 (set-face-attribute 'default nil :font "FiraCode Nerd Font" :height 120)
@@ -54,11 +56,12 @@
     (when (and (<= frame-alpha-lower-limit newalpha) (>= 100 newalpha))
       (modify-frame-parameters frame (list (cons 'alpha newalpha))))))
 
-(global-set-key (kbd "M-C-8") (lambda () (interactive) (sanityinc/adjust-opacity nil -2)))
-(global-set-key (kbd "M-C-9") (lambda () (interactive) (sanityinc/adjust-opacity nil 2)))
-(global-set-key (kbd "M-C-7") (lambda () (interactive) (modify-frame-parameters nil `((alpha . 100)))))
-
-(global-set-key (kbd "M-ƒ") 'toggle-frame-fullscreen)
+(use-package frame
+  :bind
+  (("M-C-8" . (lambda () (interactive) (sanityinc/adjust-opacity nil -2)))
+   ("M-C-9" . (lambda () (interactive) (sanityinc/adjust-opacity nil 2)))
+   ("M-C-7" . (lambda () (interactive) (modify-frame-parameters nil `((alpha . 100)))))
+   ("M-ƒ" . toggle-frame-fullscreen)))
 
 (setq frame-title-format
       '((:eval (if (buffer-file-name)

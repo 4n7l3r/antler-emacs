@@ -19,6 +19,11 @@
   (lsp-signature-render-documentation t)      ; Include doc string in signature
   (setq lsp-modeline-code-actions-segments '(count icon name))
   (lsp-enable-file-watchers t)
+  :bind (:map lsp-mode-map
+        ("C-c l" . lsp-command-map)
+        ("C-c l f" . lsp-format-buffer)
+        ("C-c l r" . lsp-rename)
+        ("C-c l a" . lsp-execute-code-action))
   :hook
   ((prog-mode . (lambda ()
                   (unless (derived-mode-p 'emacs-lisp-mode)

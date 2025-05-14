@@ -14,7 +14,7 @@
   "Disable M-<arrow> keybindings in Org mode for list manipulation."
   (let ((keys '("<M-up>" "<M-down>" "<M-left>" "<M-right>")))
     (dolist (key keys)
-      (define-key org-mode-map (kbd key) nil))))
+      (bind-key key nil org-mode-map))))
 
 (require 'org-hypothesis)
 

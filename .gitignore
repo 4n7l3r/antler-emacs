@@ -11,6 +11,7 @@ CVS
 *~
 .cvsignore
 .*.lock
+*.eld
 /tramp
 /TODO
 /.org-id-locations

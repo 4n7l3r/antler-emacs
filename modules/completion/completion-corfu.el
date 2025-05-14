@@ -50,9 +50,9 @@
         #'antler/corfu-enable-always-display-documentation)
 
   ;; Documentation navigation
-  (define-key corfu-map (kbd "M-d") #'corfu-popupinfo-toggle)
-  (define-key corfu-map (kbd "M-p") #'corfu-popupinfo-scroll-down)
-  (define-key corfu-map (kbd "M-n") #'corfu-popupinfo-scroll-up))
+  (bind-key "M-d" #'corfu-popupinfo-toggle corfu-map)
+  (bind-key "M-p" #'corfu-popupinfo-scroll-down corfu-map)
+  (bind-key "M-n" #'corfu-popupinfo-scroll-up corfu-map))
 
 (use-package kind-icon
   :ensure t

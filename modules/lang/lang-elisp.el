@@ -67,12 +67,12 @@
       (eval-region (min (point) (mark)) (max (point) (mark)))
     (pp-eval-last-sexp prefix)))
 
-(global-set-key [remap eval-expression] 'pp-eval-expression)
+(bind-key [remap eval-expression] 'pp-eval-expression)
 
 ;; TODO: Refactor into normal config
 (with-eval-after-load 'lisp-mode
-  (define-key emacs-lisp-mode-map (kbd "C-x C-e") 'sanityinc/eval-last-sexp-or-region)
-  (define-key emacs-lisp-mode-map (kbd "C-c C-e") 'pp-eval-expression))
+  (bind-key "C-x C-e" 'sanityinc/eval-last-sexp-or-region emacs-lisp-mode-map)
+  (bind-key "C-c C-e" 'pp-eval-expression emacs-lisp-mode-map))
 
 (use-package ipretty
   :ensure t
@@ -103,7 +103,7 @@ there is no current file, eval the current buffer."
       (message "Evaluated %s" (current-buffer)))))
 
 (with-eval-after-load 'lisp-mode
-  (define-key emacs-lisp-mode-map (kbd "C-c C-l") 'sanityinc/load-this-file))
+  (bind-key "C-c C-l" 'sanityinc/load-this-file emacs-lisp-mode-map))
 
 (defun sanityinc/maybe-set-bundled-elisp-readonly ()
   "If this elisp appears to be part of Emacs, then disallow editing."

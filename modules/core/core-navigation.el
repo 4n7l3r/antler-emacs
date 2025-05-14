@@ -43,8 +43,8 @@
   (require 'dired-x))
 
 ;; Hook up dired-x global bindings without loading it up-front
-(define-key ctl-x-map "\C-j" 'dired-jump)
-(define-key ctl-x-4-map "\C-j" 'dired-jump-other-window)
+(bind-key "\C-j" 'dired-jump ctl-x-map)
+(bind-key "\C-j" 'dired-jump-other-window ctl-x-4-map)
 
 
 (use-package diff-hl
